@@ -14,7 +14,17 @@ const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 
-connectDB();
+// Sanity check for environment variables on Vercel
+if (!process.env.MONGO_URI) {
+  console.error("FATAL ERROR: MONGO_URI is not defined in environment variables.");
+}
+if (!process.env.SESSION_SECRET) {
+  console.error("WARNING: SESSION_SECRET is not defined.");
+}
+
+connectDB().catch(err => {
+  console.error("Database connection failed during startup:", err);
+});
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -23,16 +33,25 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride('_method'));
+
+// Session configuration with error handling
 app.use(session({
-  secret: process.env.SESSION_SECRET,
+  secret: process.env.SESSION_SECRET || 'fallback_secret_for_debug',
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
     mongoUrl: process.env.MONGO_URI,
-    touchAfter: 24 * 3600 // only update session once every 24h unless data changes
+    ttl: 14 * 24 * 60 * 60, // 14 days
+    autoRemove: 'native',
+    touchAfter: 24 * 3600
   }),
-  cookie: { maxAge: 1000 * 60 * 60 } // 1 hour session
+  cookie: { 
+    maxAge: 1000 * 60 * 60,
+    secure: process.env.NODE_ENV === 'production', // recommended for production
+    sameSite: 'lax'
+  }
 }));
+
 
 
 app.use(flash());
