@@ -1,0 +1,36 @@
+<%- include('../partials/header') %>
+
+    <div class="login-page">
+        <div class="login-card">
+
+            <div class="login-header">
+                <span class="login-icon">🔐</span>
+                <h2>Admin Login</h2>
+                <p>Access the admin panel to manage registrations</p>
+            </div>
+
+            <form action="/admin/login" method="POST" class="login-form">
+
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter admin username" required
+                        autocomplete="off" />
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter password" required />
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full">Login →</button>
+
+            </form>
+
+            <div class="login-footer">
+                <a href="/">← Back to Portal</a>
+            </div>
+
+        </div>
+    </div>
+
+    <%- include('../partials/footer') %>

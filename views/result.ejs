@@ -1,0 +1,104 @@
+<%- include('partials/header') %>
+
+    <div class="result-page">
+        <div class="result-card <%= registration.status === 'Verified' ? 'result-verified' : 'result-rejected' %>">
+
+            <!-- Status Icon & Title -->
+            <div class="result-icon">
+                <% if (registration.status==='Verified' ) { %>
+                    <span class="icon-large">✅</span>
+                    <h2>Verification Successful!</h2>
+                    <p class="status-subtitle">You are registered for the event.</p>
+                    <% } else { %>
+                        <span class="icon-large">❌</span>
+                        <h2>Verification Failed</h2>
+                        <p class="status-subtitle">Your registration could not be verified.</p>
+                        <% } %>
+            </div>
+
+            <!-- Registration Details -->
+            <div class="result-details">
+                <h3>Registration Details</h3>
+                <table class="details-table">
+                    <tr>
+                        <th>Event</th>
+                        <td>
+                            <%= registration.event.title %>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Event Date</th>
+                        <td>
+                            <%= new Date(registration.event.date).toLocaleDateString('en-IN', { weekday: 'long' ,
+                                year: 'numeric' , month: 'long' , day: 'numeric' }) %>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Name Submitted</th>
+                        <td>
+                            <%= registration.submittedName %>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Register Number</th>
+                        <td>
+                            <%= registration.submittedRegisterNumber %>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Department</th>
+                        <td>
+                            <%= registration.submittedDepartment %>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Email</th>
+                        <td>
+                            <%= registration.submittedEmail %>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Status</th>
+                        <td>
+                            <span
+                                class="status-badge <%= registration.status === 'Verified' ? 'badge-success' : 'badge-danger' %>">
+                                <%= registration.status %>
+                            </span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Registered On</th>
+                        <td>
+                            <%= new Date(registration.createdAt).toLocaleString('en-IN') %>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- Show rejection reason if applicable -->
+                <% if (registration.status==='Rejected' && registration.rejectionReason) { %>
+                    <div class="rejection-reason">
+                        <strong>⚠️ Reason for Rejection:</strong>
+                        <p>
+                            <%= registration.rejectionReason %>
+                        </p>
+                    </div>
+                    <% } %>
+            </div>
+
+            <!-- Reference ID -->
+            <div class="reference-id">
+                <small>Reference ID: <code><%= registration._id %></code></small>
+            </div>
+
+            <!-- Actions -->
+            <div class="result-actions">
+                <a href="/" class="btn btn-primary">← Back to Events</a>
+                <% if (registration.status==='Rejected' ) { %>
+                    <a href="/register/<%= registration.event._id %>" class="btn btn-secondary">Try Again</a>
+                    <% } %>
+            </div>
+
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>

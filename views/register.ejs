@@ -1,0 +1,63 @@
+<%- include('partials/header') %>
+
+    <div class="form-page">
+        <div class="form-card">
+
+            <div class="form-card-header">
+                <h2>📝 Event Registration</h2>
+                <p>Registering for: <strong>
+                        <%= event.title %>
+                    </strong></p>
+                <p class="event-date-small">
+                    📆 <%= new Date(event.date).toLocaleDateString('en-IN', { weekday: 'long' , year: 'numeric' ,
+                        month: 'long' , day: 'numeric' }) %>
+                </p>
+            </div>
+
+            <div class="eligible-info">
+                <strong>Eligible Departments:</strong>
+                <% event.eligibleDepartments.forEach(dept=> { %>
+                    <span class="badge">
+                        <%= dept %>
+                    </span>
+                    <% }) %>
+            </div>
+
+            <!-- Registration Form -->
+            <form action="/register/<%= event._id %>" method="POST" class="reg-form">
+
+                <div class="form-group">
+                    <label for="name">Full Name <span class="required">*</span></label>
+                    <input type="text" id="name" name="name" placeholder="Enter your full name (as per college records)"
+                        required autocomplete="off" />
+                    <small>Must match your college database record exactly.</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="registerNumber">Register Number <span class="required">*</span></label>
+                    <input type="text" id="registerNumber" name="registerNumber" placeholder="e.g., 21CS001" required
+                        autocomplete="off" />
+                </div>
+
+                <div class="form-group">
+                    <label for="department">Department <span class="required">*</span></label>
+                    <input type="text" id="department" name="department" placeholder="e.g., CSE, ECE, MECH" required
+                        autocomplete="off" />
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address <span class="required">*</span></label>
+                    <input type="email" id="email" name="email" placeholder="Enter your college email" required
+                        autocomplete="off" />
+                </div>
+
+                <div class="form-actions">
+                    <a href="/" class="btn btn-secondary">← Back</a>
+                    <button type="submit" class="btn btn-primary">Submit & Verify →</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+    <%- include('partials/footer') %>

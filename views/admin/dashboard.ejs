@@ -1,0 +1,247 @@
+<%- include('../partials/header') %>
+
+    <div class="dashboard">
+
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <h2>📊 Admin Dashboard</h2>
+            <p>Welcome, <strong>
+                    <%= admin.username %>
+                </strong>! Here's an overview of all registrations.</p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="/admin/add-event" class="action-btn btn-add-event">
+                <div class="btn-icon">➕</div>
+                <div class="btn-text">
+                    <h4>Add Event</h4>
+                    <p>Create a new event</p>
+                </div>
+            </a>
+            <a href="/admin/registrations" class="action-btn btn-manage-registrations">
+                <div class="btn-icon">📋</div>
+                <div class="btn-text">
+                    <h4>Manage Registrations</h4>
+                    <p>Approve/Reject registrations</p>
+                </div>
+            </a>
+            <a href="/admin/all-students" class="action-btn btn-all-students">
+                <div class="btn-icon">👥</div>
+                <div class="btn-text">
+                    <h4>All Students</h4>
+                    <p>View all registrations</p>
+                </div>
+            </a>
+            <a href="/events" class="action-btn btn-manage-events">
+                <div class="btn-icon">🎪</div>
+                <div class="btn-text">
+                    <h4>Manage Events</h4>
+                    <p>View and edit events</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid">
+            <div class="stat-card stat-total">
+                <div class="stat-icon">📋</div>
+                <div class="stat-info">
+                    <h3>
+                        <%= totalRegistrations %>
+                    </h3>
+                    <p>Total Registrations</p>
+                </div>
+            </div>
+            <div class="stat-card stat-verified">
+                <div class="stat-icon">✅</div>
+                <div class="stat-info">
+                    <h3>
+                        <%= verifiedCount %>
+                    </h3>
+                    <p>Verified</p>
+                </div>
+            </div>
+            <div class="stat-card stat-rejected">
+                <div class="stat-icon">❌</div>
+                <div class="stat-info">
+                    <h3>
+                        <%= rejectedCount %>
+                    </h3>
+                    <p>Rejected</p>
+                </div>
+            </div>
+            <div class="stat-card stat-events">
+                <div class="stat-icon">🎪</div>
+                <div class="stat-info">
+                    <h3>
+                        <%= events.length %>
+                    </h3>
+                    <p>Total Events</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Registrations Table -->
+        <div class="table-section">
+            <h3>📝 All Registrations</h3>
+
+            <% if (registrations.length===0) { %>
+                <div class="empty-state">
+                    <p>No registrations found yet.</p>
+                </div>
+                <% } else { %>
+                    <div class="table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Event</th>
+                                    <th>Name</th>
+                                    <th>Reg. No.</th>
+                                    <th>Department</th>
+                                    <th>Email</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Rejection Reason</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% registrations.forEach((reg, index)=> { %>
+                                    <tr class="<%= reg.status === 'Verified' ? 'row-verified' : 'row-rejected' %>">
+                                        <td>
+                                            <%= index + 1 %>
+                                        </td>
+                                        <td>
+                                            <%= reg.event ? reg.event.title : 'N/A' %>
+                                        </td>
+                                        <td>
+                                            <%= reg.submittedName %>
+                                        </td>
+                                        <td><code><%= reg.submittedRegisterNumber %></code></td>
+                                        <td>
+                                            <%= reg.submittedDepartment %>
+                                        </td>
+                                        <td>
+                                            <%= reg.submittedEmail %>
+                                        </td>
+                                        <td>
+                                            <span
+                                                class="status-badge <%= reg.status === 'Verified' ? 'badge-success' : 'badge-danger' %>">
+                                                <%= reg.status %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <%= new Date(reg.createdAt).toLocaleDateString('en-IN') %>
+                                        </td>
+                                        <td class="rejection-cell">
+                                            <% if (reg.rejectionReason) { %>
+                                                <span class="rejection-text" title="<%= reg.rejectionReason %>">
+                                                    <%= reg.rejectionReason.length> 50 ?
+                                                        reg.rejectionReason.substring(0, 50) + '...' :
+                                                        reg.rejectionReason %>
+                                                </span>
+                                                <% } else { %>
+                                                    <span class="text-muted">—</span>
+                                                    <% } %>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                            </tbody>
+                        </table>
+                    </div>
+                    <% } %>
+        </div>
+
+    </div>
+
+    <style>
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            text-decoration: none;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .action-btn.btn-add-event {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .action-btn.btn-manage-registrations {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .action-btn.btn-all-students {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .action-btn.btn-manage-events {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+
+        .btn-icon {
+            font-size: 40px;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .btn-text {
+            flex: 1;
+        }
+
+        .btn-text h4 {
+            margin: 0 0 5px 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .btn-text p {
+            margin: 0;
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .action-btn {
+                padding: 15px;
+            }
+
+            .btn-icon {
+                font-size: 30px;
+                min-width: 50px;
+            }
+
+            .btn-text h4 {
+                font-size: 15px;
+            }
+
+            .btn-text p {
+                font-size: 12px;
+            }
+        }
+    </style>
+
+    <%- include('../partials/footer') %>
