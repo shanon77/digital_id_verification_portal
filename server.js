@@ -34,23 +34,35 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(methodOverride('_method'));
 
-// Session configuration with error handling
+// Session configuration with error handling and fallback
+let storeInstance;
+try {
+  if (process.env.MONGO_URI && process.env.MONGO_URI.startsWith('mongodb')) {
+    storeInstance = MongoStore.create({
+      mongoUrl: process.env.MONGO_URI,
+      ttl: 14 * 24 * 60 * 60, // 14 days
+      autoRemove: 'native',
+      touchAfter: 24 * 3600
+    });
+  } else {
+    console.warn("Using MemoryStore for sessions: MONGO_URI is missing or invalid.");
+  }
+} catch (storeError) {
+  console.error("Failed to initialize MongoStore:", storeError);
+}
+
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'fallback_secret_for_debug',
+  secret: process.env.SESSION_SECRET || 'dev_secret_fallback',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI,
-    ttl: 14 * 24 * 60 * 60, // 14 days
-    autoRemove: 'native',
-    touchAfter: 24 * 3600
-  }),
+  store: storeInstance, // Defaults to MemoryStore if storeInstance is undefined
   cookie: { 
     maxAge: 1000 * 60 * 60,
-    secure: process.env.NODE_ENV === 'production', // recommended for production
+    secure: process.env.NODE_ENV === 'production', 
     sameSite: 'lax'
   }
 }));
+
 
 
 
